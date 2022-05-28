@@ -21,10 +21,33 @@
 
 ## Структура
   - Модель User для авторизаций возможно ролей (UserController + migration из коробки) 
-  - Модель Form { 'form_uid' => 'Yникальный идентификатор', 'name'=> 'Название формы','description'=>'Описание формы','model'=>'Model формы'}
+  
+  - Модель Form 
+
+        Schema::create('forms', function (Blueprint $table) {
+            $table->id();
+            $table->string('name',255); //наименование  формы
+            $table->text('description'); //описание  формы
+            $table->json('model'); // json модель формы
+            $table->softDeletes(); // пометка на удаление
+            $table->timestamps(); // создание обновление
+        });
+
   - Controller FormController --resource контроллер (создание,обработка, сохранение, удаление )
+  - Модель FormData 
+
+        Schema::create('form_data', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('form_uid'); // идентификатор модели формы
+            $table->json('data'); // Загружаемые данные из вне
+            $table->softDeletes(); // пометка на удаление
+            $table->timestamps(); // создание обновление
+            $table->foreign('form_uid')->references('id')->on('form');
+        });
+
   - Сontroller FormDataController (просмотр журнала заполненых форм в разрезе названий)
   - Procedure FormProcedure Отвечающая за прием передачу форм и данных от сторонннего клиента
 
 ## Пути развития
-задействование библиотеки https://surveyjs.io/, которая позволяет формировать и отбражать формы любой сложности, а также анкеты
+- выполнить авторизацию
+- задействование библиотеки https://surveyjs.io/, которая позволяет формировать и отбражать формы любой сложности, а также анкеты
