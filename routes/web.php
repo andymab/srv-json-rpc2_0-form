@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\FormController;
+use App\Http\Controllers\FormDataController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,6 +20,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Auth::routes();
 
+Auth::routes();
+Route::resource('form', FormController::class);
+Route::resource('formdata', FormDataController::class);
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
