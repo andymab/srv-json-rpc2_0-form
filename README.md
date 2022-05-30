@@ -13,6 +13,20 @@
   - composer ^2
   - nodejs npm
 
+## инсталяция:
+- git clone https://github.com/andymab/srv-json-rpc2_0-form.git you-app
+- cd you-app
+- composer all
+- npm install && npm run dev
+- cp .env.example .env
+- В .env установить базу данных, пароль, логин, MAIL_MAILER=log
+- php artisan migrate --seed
+- php artisan key:generate
+- php artisan serve
+запустится на http://127.0.0.1:8000/   этот адрес должен быть прописан на клиенте ( в моем случае разместил в основном (и единственном ) классе на стороне киента)
+# Пароли
+*login: admin@localhost password: admin*
+
 ## Реализация сервера json RPC 2.0 представляет из себя сборку:
   - [Laravel ^8.6 ](https://laravel.com/docs/9.x/installation#:~:text=composer%20create%2Dproject%20laravel/laravel%20example%2Dapp)
   - добавлена библиотека laravel/ui
@@ -45,8 +59,35 @@
             $table->foreign('form_uid')->references('id')->on('form');
         });
 
-  - Сontroller FormDataController (просмотр журнала заполненых форм в разрезе названий)
-  - Procedure FormProcedure Отвечающая за прием передачу форм и данных от сторонннего клиента
+  - Сontroller **FormDataController** (просмотр журнала заполненых форм в разрезе названий)
+  - Procedure **FormProcedure** Отвечающая за прием передачу форм и данных от сторонннего клиента, в частности реализованно три метода
+  передача пустых форм, передача конкретной пустой формы, прием заполненой формы. По аналогии можно дополнить
+
+<pre>
+      public function getforms()
+    {
+        return Form::all();
+    }
+
+
+    public function storeformdata(Request $request)
+    {
+        try {
+            $formdata  = new FormData();
+            $formdata->form_uid = $request->form_uid;
+            $formdata->data = json_encode($request->formdata);
+            $formdata->save();
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+
+    public function getform(Request $request)
+    {
+        return Form::where('id', '=', $request->form_uid)->first();
+    }
+</pre>
 
 ## Пути развития
 - выполнить авторизацию
